@@ -1,9 +1,26 @@
-import javax.swing.*;
-import java.awt.*;
+public class Node{
+    public enum State {OPEN, CLOSED, UNVISITED};
 
-public class Node<T> extends JLabel {
+    public int pos_x;
+    public int pos_y;
 
-     Node() {
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+    private State state = State.UNVISITED;
+
+     Node(int pos_x, int pos_y) {
+        this.pos_x = pos_x;
+        this.pos_y = pos_y;
+    }
+
+
+    public State getState(){
+         return state;
+    }
+
+    public void setState(State state){
+         this.state = state;
+    }
+
+    public void printNode(){
+        System.out.println(this.pos_x + " " + this.pos_y);
     }
 }
