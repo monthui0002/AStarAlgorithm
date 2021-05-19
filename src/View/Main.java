@@ -1,3 +1,7 @@
+package View;
+
+import AStarAlgorithm.AStarAlgorithm;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,8 +12,8 @@ public class Main extends JPanel implements ActionListener {
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 900;
 
-    private static final int COLS = 30;
-    private static final int ROWS = 30;
+    public static final int COLS = 30;
+    public static final int ROWS = 30;
 
     public static final int TILE_SIZE = 30;
 
@@ -37,14 +41,16 @@ public class Main extends JPanel implements ActionListener {
     public void createNode() {
         this.startNode = new Node(10, 10);
         this.targetNode = new Node(20, 20);
-
         this.node = new Node[COLS][ROWS];
 
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
                 this.node[i][j] = new Node(i, j);
+                this.node[i][j].setH(targetNode);
             }
         }
+        this.startNode = this.node[10][10];
+        this.targetNode = this.node[20][20];
     }
 
 
@@ -63,7 +69,24 @@ public class Main extends JPanel implements ActionListener {
 
         startMouseHandler(main);
 
+        start();
+
         frame.setVisible(true);
+    }
+
+
+    public void start(){
+        resetState();
+        AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
+        aStarAlgorithm.priorityQueue.add(this.startNode);
+        if(aStarAlgorithm.calculate(this.startNode)){
+            Node n = targetNode;
+            while (n.parent != null){
+                n.setState(Node.State.VISITED);
+                n = n.parent;
+            }
+        }
+        repaint();
     }
 
 
@@ -84,12 +107,16 @@ public class Main extends JPanel implements ActionListener {
         Color color = Color.BLACK;
 
         switch (node.getState()) {
-            case OPEN:
+            case UNVISITED:
                 color = Color.WHITE;
                 break;
-            case CLOSED:
-//                color = Color.BLACK;
+            case VISITED:
+                color = Color.ORANGE;
                 break;
+            case OPEN:
+                color = Color.CYAN;
+                break;
+
         }
         if (node.compare(this.startNode)) {
             color = Color.BLUE;
@@ -139,6 +166,17 @@ public class Main extends JPanel implements ActionListener {
         g.drawString("LEFT MOUSE BUTTON = START", posX, posY + 200);
         g.drawString("RIGHT MOUSE BUTTON = TARGET", posX, posY + 240);
         g.drawString("MIDDLE MOUSE BUTTON = WALL", posX, posY + 280);
+    }
+
+
+    private void resetState(){
+        for (int i = 0; i < COLS; i++) {
+            for (int j = 0; j < ROWS; j++) {
+                this.node[i][j].setH(targetNode);
+                if(this.node[i][j].getState() == Node.State.VISITED || this.node[i][j].getState() == Node.State.OPEN)
+                    this.node[i][j].setState(Node.State.UNVISITED);
+            }
+        }
     }
 
 

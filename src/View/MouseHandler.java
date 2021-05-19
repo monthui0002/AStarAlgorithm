@@ -1,3 +1,5 @@
+package View;
+
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,7 +21,7 @@ public class MouseHandler extends MouseAdapter {
 
         getClicked(e, x, y);
 
-        Main.frame.repaint();
+        this.main.start();
     }
 
     private boolean outOfRange(int x, int y) {
@@ -28,11 +30,11 @@ public class MouseHandler extends MouseAdapter {
 
     public void getClicked(MouseEvent e, int x, int y) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            this.main.startNode = new Node(x, y);
+            this.main.startNode = this.main.node[x][y];
         } else if (SwingUtilities.isRightMouseButton(e)) {
-            this.main.targetNode = new Node(x, y);
+            this.main.targetNode = this.main.node[x][y];
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
-            if (this.main.node[x][y].getState() == Node.State.OPEN
+            if ((this.main.node[x][y].getState() != Node.State.CLOSED)
                     && !this.main.node[x][y].compare(this.main.startNode)
                     && !this.main.node[x][y].compare(this.main.targetNode))
                 this.main.node[x][y].setState(Node.State.CLOSED);
