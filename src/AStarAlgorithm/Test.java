@@ -17,8 +17,9 @@ public class Test {
     public static PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
 
     public static void AStar(Node currentNode) {
+        System.out.print("(" + currentNode.pos_x + ", " + currentNode.pos_y + ")");
         maze[currentNode.pos_x][currentNode.pos_y] = 1;
-        printMaze();
+//        printMaze();
         if (currentNode.compare(targetNode)) {
             System.out.println("done---------------------");
             return;
@@ -52,8 +53,8 @@ public class Test {
         }
 
 
-        startNode = new Node(10, 10);
-        targetNode = new Node(20, 20);
+        startNode = new Node(7, 18);
+        targetNode = new Node(17, 18);
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
@@ -64,7 +65,7 @@ public class Test {
         }
 
         AStar(startNode);
-        Node n = node[20][20];
+        Node n = node[17][18];
         while (n.parent != null){
             System.out.print("(" + n.parent.pos_x + ", " + n.parent.pos_y + ")" + "   <-   ");
             n = n.parent;

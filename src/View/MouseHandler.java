@@ -31,8 +31,10 @@ public class MouseHandler extends MouseAdapter {
     public void getClicked(MouseEvent e, int x, int y) {
         if (SwingUtilities.isLeftMouseButton(e)) {
             this.main.startNode = this.main.node[x][y];
+            this.main.node[x][y].setState(Node.State.UNVISITED);
         } else if (SwingUtilities.isRightMouseButton(e)) {
             this.main.targetNode = this.main.node[x][y];
+            this.main.node[x][y].setState(Node.State.UNVISITED);
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             if ((this.main.node[x][y].getState() != Node.State.CLOSED)
                     && !this.main.node[x][y].compare(this.main.startNode)
