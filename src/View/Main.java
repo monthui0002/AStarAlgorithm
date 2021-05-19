@@ -81,7 +81,7 @@ public class Main extends JPanel implements ActionListener {
         aStarAlgorithm.priorityQueue.add(this.startNode);
         if(aStarAlgorithm.calculate(this.startNode)){
             Node n = targetNode;
-            while (n.parent != null){
+            while (n.parent != null && n != this.startNode){
                 n.setState(Node.State.VISITED);
                 n = n.parent;
             }
