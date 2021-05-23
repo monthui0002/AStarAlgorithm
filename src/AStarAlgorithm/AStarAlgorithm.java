@@ -3,14 +3,14 @@ package AStarAlgorithm;
 import View.Main;
 import View.Node;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class AStarAlgorithm {
     Main main;
 
     public PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
+
+    public int numberOfSteps = 0;
 
     public AStarAlgorithm(Main main) {
         this.main = main;
@@ -31,9 +31,9 @@ public class AStarAlgorithm {
                 neighbors.forEach(neighbor -> {
                     neighbor.setState(Node.State.OPEN);
                     neighbor.setParent(currentNode);
-                    if (!priorityQueue.contains(neighbor)) {
+//                    if (!priorityQueue.contains(neighbor)) {
                         priorityQueue.add(neighbor);
-                    }
+//                    }
                 });
             }
             if(!priorityQueue.isEmpty()){
@@ -52,6 +52,7 @@ public class AStarAlgorithm {
                         && node.pos_x + i <= Main.COLS - 1 && node.pos_y + j <= Main.ROWS - 1
                         && !(i == 0 && j == 0)
                         && this.main.node[node.pos_x + i][node.pos_y + j].getState() == Node.State.UNVISITED) {
+//                    this.main.node[node.pos_x + i][node.pos_y + j].calculateG(node);
                     neighbors.add(this.main.node[node.pos_x + i][node.pos_y + j]);
                 }
             }

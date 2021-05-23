@@ -84,7 +84,9 @@ public class Test {
     }
 
     static class Node implements Comparable<Node> {
-        public double h = 0;
+        private double h = 0;
+        private double g = 0;
+
         public int state;
 
         public int pos_x;
@@ -102,12 +104,12 @@ public class Test {
             this.h = Math.sqrt(Math.pow(targetNode.pos_x - this.pos_x, 2) + Math.pow(targetNode.pos_y - this.pos_y, 2));
         }
 
-        double getG(Node node) {
-            return Math.sqrt(Math.pow(node.pos_x - this.pos_x, 2) + Math.pow(node.pos_y - this.pos_y, 2));
+        void getG(Node node) {
+            this.g = Math.sqrt(Math.pow(node.pos_x - this.pos_x, 2) + Math.pow(node.pos_y - this.pos_y, 2)) + node.g;
         }
 
         double getF() {
-            return this.parent != null ? this.getG(this.parent) + this.h : 0;
+            return this.parent != null ? this.g + this.h : 0;
         }
 
         void setParent(Node node) {
@@ -120,6 +122,7 @@ public class Test {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (this.pos_x + i >= 0 && this.pos_y + j >= 0 && this.pos_x + i <= m - 1 && this.pos_y + j <= n - 1 && !(i == 0 && j == 0) && maze[this.pos_x + i][this.pos_y + j] != 1) {
+                        node[this.pos_x + i][this.pos_y + j].getG(this);
                         neighbors.add(node[this.pos_x + i][this.pos_y + j]);
                     }
                 }

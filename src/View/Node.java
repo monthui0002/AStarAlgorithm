@@ -9,6 +9,7 @@ public class Node implements Comparable<Node> {
     public int pos_y;
 
     private double h = 0;
+    private double g = 0;
 
     private State state = State.UNVISITED;
 
@@ -40,13 +41,13 @@ public class Node implements Comparable<Node> {
     }
 
 
-    double getG(Node node) {
-        return Math.sqrt(Math.pow(node.pos_x - this.pos_x, 2) + Math.pow(node.pos_y - this.pos_y, 2));
+    public void calculateG(Node node) {
+        this.g = Math.sqrt(Math.pow(node.pos_x - this.pos_x, 2) + Math.pow(node.pos_y - this.pos_y, 2)) + node.g;
     }
 
 
     double getF() {
-        return this.parent != null ? this.getG(this.parent) + this.h : 0;
+        return this.parent != null ? this.g + this.h : 0;
     }
 
 
