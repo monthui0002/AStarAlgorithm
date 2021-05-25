@@ -78,14 +78,8 @@ public class Main extends JPanel implements ActionListener {
     public void start(){
         resetState();
         AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
-        aStarAlgorithm.priorityQueue.add(this.startNode);
-        if(aStarAlgorithm.calculate(this.startNode)){
-            Node n = targetNode;
-            while (n.parent != null && n != this.startNode){
-                n.setState(Node.State.VISITED);
-                n = n.parent;
-            }
-        }
+        aStarAlgorithm.close.add(startNode);
+        aStarAlgorithm.calculate(this.startNode);
         repaint();
     }
 
@@ -173,6 +167,7 @@ public class Main extends JPanel implements ActionListener {
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
                 this.node[i][j].setH(targetNode);
+                this.node[i][j].setG(0);
                 if(this.node[i][j].getState() == Node.State.VISITED || this.node[i][j].getState() == Node.State.OPEN)
                     this.node[i][j].setState(Node.State.UNVISITED);
             }

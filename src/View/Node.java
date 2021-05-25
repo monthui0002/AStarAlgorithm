@@ -1,6 +1,9 @@
 package View;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node implements Comparable<Node> {
 
     public enum State {OPEN, CLOSED, UNVISITED, VISITED}
@@ -14,6 +17,8 @@ public class Node implements Comparable<Node> {
     private State state = State.UNVISITED;
 
     public Node parent = null;
+    public double bestG = 0;
+
 
     public Node(int pos_x, int pos_y) {
         this.pos_x = pos_x;
@@ -46,8 +51,26 @@ public class Node implements Comparable<Node> {
     }
 
 
-    double getF() {
+    public void setG(double g){
+        this.g = g;
+    }
+
+
+    public double getG(){
+        return this.g;
+    }
+
+
+    public double getF() {
         return this.parent != null ? this.g + this.h : 0;
+    }
+
+
+    public void convertToBestNode(Node node){
+        if(this.g > node.g){
+            this.g = node.g;
+            this.parent = node.parent;
+        }
     }
 
 
