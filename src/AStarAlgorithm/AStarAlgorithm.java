@@ -10,7 +10,7 @@ public class AStarAlgorithm {
 
     public PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
 
-    public List<Node> close = new ArrayList<>();
+    public List<Node> visited = new ArrayList<>();
 
     public double index;
 
@@ -24,6 +24,7 @@ public class AStarAlgorithm {
         if (currentNode.compare(this.main.targetNode)) {
             priorityQueue.clear();
             Node result = currentNode;
+            this.main.result = currentNode;
             while (result != null) {
                 this.main.node[result.pos_x][result.pos_y].setState(Node.State.VISITED);
                 result = result.parent;
@@ -37,14 +38,18 @@ public class AStarAlgorithm {
                 neighbors.forEach(neighbor -> {
                     this.main.node[neighbor.pos_x][neighbor.pos_y].setState(Node.State.OPEN);
                     priorityQueue.add(neighbor);
-                    if(!inClose(neighbor)) close.add(neighbor);
+                    if(!inClose(neighbor)){
+                        visited.add(neighbor);
+                    }
                 });
             }
+//            convertVisitedToPriorityQueue();
             if (!priorityQueue.isEmpty()) {
                 next = priorityQueue.poll();
                 calculate(next);
             }
         }
+        visited.clear();
     }
 
     private List<Node> getNeighbors(Node node) {
@@ -74,19 +79,16 @@ public class AStarAlgorithm {
 
     private boolean betterG(Node node, int x, int y) {
         if (inClose(this.main.node[x][y])) {
-            if (node.getG() + Math.sqrt(Math.pow(node.pos_x - x, 2) + Math.pow(node.pos_y - y, 2)) < getMinG(this.main.node[x][y])) {
-                return true;
-            }
-            return false;
+            return node.getG() + Math.sqrt(Math.pow(node.pos_x - x, 2) + Math.pow(node.pos_y - y, 2)) < getMinG(this.main.node[x][y]);
         }
         return true;
     }
 
 
     private boolean inClose(Node node){
-        for(int i = 0; i < close.size(); i++){
+        for(int i = 0; i < visited.size(); i++){
             index = i;
-            if(close.get(i).compare(node)) return true;
+            if(visited.get(i).compare(node)) return true;
         }
         return false;
     }
@@ -94,18 +96,19 @@ public class AStarAlgorithm {
 
     private double getMinG(Node node){
         double min = 0;
-        for(int i = 0; i < close.size(); i++){
-            if(close.get(i).compare(node)){
-                min = close.get(i).getG();
-                for(int j = i;j < close.size(); j++){
-                    if(close.get(i).compare(node)){
-                        if(min > close.get(j).getG()) min = close.get(j).getG();
+        for(int i = 0; i < visited.size(); i++){
+            if(visited.get(i).compare(node)){
+                min = visited.get(i).getG();
+                for(int j = i;j < visited.size(); j++){
+                    if(visited.get(j).compare(node)){
+                        if(min > visited.get(j).getG()){
+                            min = visited.get(j).getG();
+                        }
                     }
                 }
-                break;
+                return min;
             }
         }
         return min;
     }
-
 }
