@@ -4,19 +4,17 @@ import AStarAlgorithm.AStarAlgorithm;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
 
-public class Main extends JPanel implements ActionListener {
+public class Main extends JPanel {
 
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 900;
 
-    public static final int COLS = 20;
-    public static final int ROWS = 20;
+    public static final int COLS = 30;
+    public static final int ROWS = 30;
 
-    public static final int TILE_SIZE = 40;
+    public static final int TILE_SIZE = HEIGHT/COLS;
 
     public Node[][] node = new Node[COLS][ROWS];
 
@@ -54,25 +52,36 @@ public class Main extends JPanel implements ActionListener {
         }
         this.startNode = this.node[0][0];
         this.targetNode = this.node[10][10];
+
+        for (int i = 0; i < COLS; i++) {
+            for (int j = 0; j < ROWS; j++) {
+                for (int m = -1; m <= 1; m++) {
+                    for (int n = -1; n <= 1; n++) {
+                        if (i + m >= 0 && i + m < Main.COLS && j + n >= 0 && j + n < Main.ROWS && !(m == 0 && n == 0)) {
+                            this.node[i][j].list.add(this.node[i + m][j + n]);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
     public void initialize() {
         Main main = new Main();
-        main.setPreferredSize(new Dimension(600, 600));
-        main.setBorder(BorderFactory.createLineBorder(Color.BLUE, 5));
-
+        main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         frame = new JFrame("A Star Algorithm");
-        frame.setBounds(0, 0, WIDTH, HEIGHT);
+        frame.getContentPane().add(main);
+        frame.setResizable(false);
+        frame.pack();
+        frame.getContentPane().add(main);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
-        frame.getContentPane().add(main);
-
         startMouseHandler(main);
 
-        start();
+        main.start();
 
         frame.setVisible(true);
     }
@@ -82,9 +91,8 @@ public class Main extends JPanel implements ActionListener {
         resetState();
         AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
         aStarAlgorithm.visited.add(this.startNode);
-        aStarAlgorithm.calculate(this.startNode);
+        aStarAlgorithm.AStar(this.startNode);
         repaint();
-        aStarAlgorithm.visited.clear();
     }
 
 
@@ -183,15 +191,10 @@ public class Main extends JPanel implements ActionListener {
             for (int j = 0; j < ROWS; j++) {
                 this.node[i][j].setH(targetNode);
                 this.node[i][j].setG(0);
+                this.node[i][j].parent = null;
                 if(this.node[i][j].getState() == Node.State.VISITED || this.node[i][j].getState() == Node.State.OPEN)
                     this.node[i][j].setState(Node.State.UNVISITED);
             }
         }
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 }

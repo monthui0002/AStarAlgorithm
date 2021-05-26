@@ -1,6 +1,9 @@
 package View;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node implements Comparable<Node> {
 
     public enum State {OPEN, CLOSED, UNVISITED, VISITED}
@@ -14,6 +17,8 @@ public class Node implements Comparable<Node> {
     private State state = State.UNVISITED;
 
     public Node parent = null;
+
+    public List<Node> list = new ArrayList<>();
 
 
     public Node(int pos_x, int pos_y) {

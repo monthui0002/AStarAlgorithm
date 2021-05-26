@@ -8,107 +8,53 @@ import java.util.*;
 public class AStarAlgorithm {
     Main main;
 
-    public PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
+    public PriorityQueue<Node> open = new PriorityQueue<>();
+
+    public PriorityQueue<Node> close = new PriorityQueue<>();
 
     public List<Node> visited = new ArrayList<>();
-
-    public double index;
 
     public AStarAlgorithm(Main main) {
         this.main = main;
     }
 
 
-    public void calculate(Node currentNode) {
-        this.main.node[currentNode.pos_x][currentNode.pos_y].setState(Node.State.OPEN);
-        if (currentNode.compare(this.main.targetNode)) {
-            priorityQueue.clear();
-            Node result = currentNode;
-            this.main.result = currentNode;
-            while (result != null) {
-                this.main.node[result.pos_x][result.pos_y].setState(Node.State.VISITED);
-                result = result.parent;
+    public void AStar(Node currentNode) {
+        open.add(currentNode);
+        while (!open.isEmpty()) {
+            currentNode = open.peek();
+            currentNode.setState(Node.State.VISITED);
+            if (currentNode.compare(this.main.targetNode)) {
+                this.main.result = currentNode;
+                open.clear();
+                close.clear();
+                return;
             }
-            return;
-        }
-        List<Node> neighbors = getNeighbors(currentNode);
-        if (!(neighbors.isEmpty() && priorityQueue.isEmpty())) {
-            Node next;
-            if (!neighbors.isEmpty()) {
-                neighbors.forEach(neighbor -> {
-                    this.main.node[neighbor.pos_x][neighbor.pos_y].setState(Node.State.OPEN);
-                    priorityQueue.add(neighbor);
-                    if(!inClose(neighbor)){
-                        visited.add(neighbor);
+            for(Node node : currentNode.list){
+                if(node.getState() != Node.State.CLOSED){
+                    double weight = currentNode.getG() + Math.sqrt(Math.pow(currentNode.pos_x - node.pos_x, 2) + Math.pow(currentNode.pos_y - node.pos_y, 2));
+                    if(!open.contains(node) && !close.contains(node)){
+                        node.parent = currentNode;
+                        node.calculateG(currentNode);
+                        open.add(node);
+                        node.setState(Node.State.OPEN);
                     }
-                });
-            }
-//            convertVisitedToPriorityQueue();
-            if (!priorityQueue.isEmpty()) {
-                next = priorityQueue.poll();
-                calculate(next);
-            }
-        }
-        visited.clear();
-    }
-
-    private List<Node> getNeighbors(Node node) {
-        List<Node> neighbors = new ArrayList<>();
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (checkNeighbors(node, node.pos_x + i, node.pos_y + j) && !(i == 0 && j == 0)) {
-                    Node neighbor = new Node(node.pos_x + i, node.pos_y + j);
-                    neighbor.setParent(node);
-                    neighbor.setH(this.main.targetNode);
-                    neighbor.calculateG(node);
-                    neighbors.add(neighbor);
-                }
-            }
-        }
-        return neighbors;
-    }
-
-
-    private boolean checkNeighbors(Node node, int x, int y) {
-        return x >= 0 && x < Main.COLS &&
-                y >= 0 && y < Main.ROWS &&
-                this.main.node[x][y].getState() != Node.State.CLOSED &&
-                betterG(node, x, y);
-    }
-
-
-    private boolean betterG(Node node, int x, int y) {
-        if (inClose(this.main.node[x][y])) {
-            return node.getG() + Math.sqrt(Math.pow(node.pos_x - x, 2) + Math.pow(node.pos_y - y, 2)) < getMinG(this.main.node[x][y]);
-        }
-        return true;
-    }
-
-
-    private boolean inClose(Node node){
-        for(int i = 0; i < visited.size(); i++){
-            index = i;
-            if(visited.get(i).compare(node)) return true;
-        }
-        return false;
-    }
-
-
-    private double getMinG(Node node){
-        double min = 0;
-        for(int i = 0; i < visited.size(); i++){
-            if(visited.get(i).compare(node)){
-                min = visited.get(i).getG();
-                for(int j = i;j < visited.size(); j++){
-                    if(visited.get(j).compare(node)){
-                        if(min > visited.get(j).getG()){
-                            min = visited.get(j).getG();
+                    else {
+                        if(node.getG() > weight){
+                            node.parent = currentNode;
+                            node.setG(weight);
+                            if(close.contains(node)){
+                                close.remove(node);
+                                open.add(node);
+                                node.setState(Node.State.OPEN);
+                            }
                         }
                     }
                 }
-                return min;
+
             }
+            close.add(currentNode);
+            open.remove(currentNode);
         }
-        return min;
     }
 }

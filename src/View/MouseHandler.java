@@ -25,7 +25,7 @@ public class MouseHandler extends MouseAdapter {
     }
 
     private boolean outOfRange(int x, int y) {
-        return (x < 0 || y < 0 || x >= Main.TILE_SIZE || y >= Main.TILE_SIZE);
+        return (x < 0 || y < 0 || x >= Main.COLS || y >= Main.ROWS);
     }
 
     public void getClicked(MouseEvent e, int x, int y) {
@@ -40,7 +40,7 @@ public class MouseHandler extends MouseAdapter {
                     && !this.main.node[x][y].compare(this.main.startNode)
                     && !this.main.node[x][y].compare(this.main.targetNode))
                 this.main.node[x][y].setState(Node.State.CLOSED);
-            else this.main.node[x][y].setState(Node.State.OPEN);
+            else this.main.node[x][y].setState(Node.State.UNVISITED);
         }
     }
 }
