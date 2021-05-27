@@ -1,12 +1,14 @@
 package View;
 
 import AStarAlgorithm.AStarAlgorithm;
+import AStarAlgorithm.Dijkstra;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 
-public class Main extends JPanel {
+public class Main extends JPanel implements Runnable{
+    static Main main;
 
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 900;
@@ -23,6 +25,11 @@ public class Main extends JPanel {
 
     public Node result;
 
+    private final int AStarAlgorithm = 1;
+    private final int Dijkstra = 2;
+
+    int state;
+
     /* main framework */
     public static JFrame frame;
 
@@ -32,10 +39,13 @@ public class Main extends JPanel {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Main window = new Main();
-            window.initialize();
-        });
+        main = new Main();
+        Thread thread = new Thread(main);
+        thread.start();
+//        SwingUtilities.invokeLater(() -> {
+//            Main window = new Main();
+//            window.initialize();
+//        });
     }
 
 
@@ -47,7 +57,7 @@ public class Main extends JPanel {
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
                 this.node[i][j] = new Node(i, j);
-                this.node[i][j].setH(targetNode);
+                this.node[i][j].calculateH(targetNode);
             }
         }
         this.startNode = this.node[0][0];
@@ -67,31 +77,50 @@ public class Main extends JPanel {
     }
 
 
-    public void initialize() {
-        Main main = new Main();
-        main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+    private void createButton(JPanel panel) {
+        panel.setLayout(null);
+        JButton aStar = new JButton("A* algorithm");
 
-        frame = new JFrame("A Star Algorithm");
-        frame.getContentPane().add(main);
-        frame.setResizable(false);
-        frame.pack();
-        frame.getContentPane().add(main);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
+        aStar.setBounds(HEIGHT + TILE_SIZE,100,200,50);
+        aStar.setFocusPainted(false);
+        aStar.setBackground(new Color(59, 89, 182));
+        aStar.setFont(new Font("Serif", Font.BOLD, 15));
 
-        startMouseHandler(main);
+        aStar.addActionListener(e -> {
+            aStar.setBackground(new Color(59, 89, 182));
+            aStar.setText(aStar.getText() + state);
+            state = AStarAlgorithm;
+        });
 
-        main.start();
+        JButton dijkstra = new JButton("Dijkstra algorithm");
 
-        frame.setVisible(true);
+        dijkstra.setBounds(HEIGHT + TILE_SIZE,200,200,50);
+
+        dijkstra.setFocusPainted(false);
+        dijkstra.setBackground(new Color(255, 255, 255));
+        dijkstra.setFont(new Font("Serif", Font.BOLD, 15));
+
+        dijkstra.addActionListener(e -> {
+            dijkstra.setBackground(new Color(59, 89, 182));
+            dijkstra.setText(dijkstra.getText() + state);
+            state++;
+//            state = Dijkstra;
+        });
+        panel.add(aStar);
+        panel.add(dijkstra);
     }
 
 
     public void start(){
         resetState();
+
         AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
-        aStarAlgorithm.visited.add(this.startNode);
-        aStarAlgorithm.AStar(this.startNode);
+        Thread thread = new Thread(aStarAlgorithm);
+        thread.start();
+//
+//        Dijkstra dijkstra = new Dijkstra(this);
+//        Thread thread = new Thread(dijkstra);
+//        thread.start();
         repaint();
     }
 
@@ -189,12 +218,35 @@ public class Main extends JPanel {
     private void resetState(){
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
-                this.node[i][j].setH(targetNode);
+                this.node[i][j].calculateH(targetNode);
                 this.node[i][j].setG(0);
                 this.node[i][j].parent = null;
                 if(this.node[i][j].getState() == Node.State.VISITED || this.node[i][j].getState() == Node.State.OPEN)
                     this.node[i][j].setState(Node.State.UNVISITED);
             }
         }
+    }
+
+    @Override
+    public void run() {
+//        Main main = new Main();
+        main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
+        frame = new JFrame("A Star Algorithm");
+        frame.getContentPane().add(main);
+        frame.setResizable(false);
+        frame.pack();
+        frame.getContentPane().add(main);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.getContentPane().setLayout(null);
+
+        createButton(main);
+
+        main.start();
+
+        startMouseHandler(main);
+
+        frame.setVisible(true);
     }
 }

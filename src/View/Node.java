@@ -11,6 +11,7 @@ public class Node implements Comparable<Node> {
     public int pos_x;
     public int pos_y;
 
+    private double f;
     private double h = 0;
     private double g = 0;
 
@@ -37,7 +38,12 @@ public class Node implements Comparable<Node> {
     }
 
 
-    public void setH(Node targetNode) {
+    public void setH(double h){
+        this.h = h;
+    }
+
+
+    public void calculateH(Node targetNode) {
         this.h = Math.sqrt(Math.pow(targetNode.pos_x - this.pos_x, 2) + Math.pow(targetNode.pos_y - this.pos_y, 2));
     }
 
@@ -62,8 +68,17 @@ public class Node implements Comparable<Node> {
     }
 
 
+    public void setF(double f) {
+        this.f = f;
+    }
+
+
     public double getF() {
-        return this.parent != null ? this.g + this.h : 0;
+        if(this.parent != null){
+            this.f = this.g + this.h;
+            return this.f;
+        }
+        return 0;
     }
 
 
@@ -75,6 +90,7 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int compareTo(Node o) {
+        getF();
         return Double.compare(this.getF(), o.getF());
     }
 }

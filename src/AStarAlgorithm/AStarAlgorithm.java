@@ -5,21 +5,19 @@ import View.Node;
 
 import java.util.*;
 
-public class AStarAlgorithm {
+public class AStarAlgorithm implements Runnable {
     Main main;
 
     public PriorityQueue<Node> open = new PriorityQueue<>();
 
     public PriorityQueue<Node> close = new PriorityQueue<>();
 
-    public List<Node> visited = new ArrayList<>();
-
     public AStarAlgorithm(Main main) {
         this.main = main;
     }
 
 
-    public void AStar(Node currentNode) {
+    public void aStar(Node currentNode) {
         open.add(currentNode);
         while (!open.isEmpty()) {
             currentNode = open.peek();
@@ -37,6 +35,12 @@ public class AStarAlgorithm {
                         node.parent = currentNode;
                         node.calculateG(currentNode);
                         open.add(node);
+                        try {
+                            Thread.sleep(100);
+                            this.main.repaint();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         node.setState(Node.State.OPEN);
                     }
                     else {
@@ -46,6 +50,12 @@ public class AStarAlgorithm {
                             if(close.contains(node)){
                                 close.remove(node);
                                 open.add(node);
+                                try {
+                                    Thread.sleep(100);
+                                    this.main.repaint();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                                 node.setState(Node.State.OPEN);
                             }
                         }
@@ -56,5 +66,10 @@ public class AStarAlgorithm {
             close.add(currentNode);
             open.remove(currentNode);
         }
+    }
+
+    @Override
+    public void run() {
+        aStar(this.main.startNode);
     }
 }
