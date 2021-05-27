@@ -22,6 +22,8 @@ public class MouseHandler extends MouseAdapter {
         getClicked(e, x, y);
 
         this.main.repaint();
+
+        this.main.resetState();
     }
 
     private boolean outOfRange(int x, int y) {

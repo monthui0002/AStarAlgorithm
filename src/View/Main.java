@@ -217,7 +217,7 @@ public class Main extends JPanel implements Runnable{
     }
 
 
-    private void resetState(){
+    public void resetState(){
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
                 this.node[i][j].calculateH(targetNode);
@@ -231,7 +231,6 @@ public class Main extends JPanel implements Runnable{
 
     @Override
     public void run() {
-//        Main main = new Main();
         main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         frame = new JFrame("A Star Algorithm");
