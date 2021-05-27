@@ -25,13 +25,12 @@ public class Main extends JPanel implements Runnable{
 
     public Node result;
 
-    private final int AStarAlgorithm = 1;
-    private final int Dijkstra = 2;
-
-    int state;
+    public MouseHandler mouseHandler;
 
     /* main framework */
     public static JFrame frame;
+
+    public int speed = 20;
 
     public Main() {
         createNode();
@@ -42,16 +41,12 @@ public class Main extends JPanel implements Runnable{
         main = new Main();
         Thread thread = new Thread(main);
         thread.start();
-//        SwingUtilities.invokeLater(() -> {
-//            Main window = new Main();
-//            window.initialize();
-//        });
     }
 
 
     public void createNode() {
-        this.startNode = new Node(0, 0);
-        this.targetNode = new Node(10, 10);
+        this.startNode = new Node(10, 10);
+        this.targetNode = new Node(20, 20);
         this.node = new Node[COLS][ROWS];
 
         for (int i = 0; i < COLS; i++) {
@@ -60,8 +55,9 @@ public class Main extends JPanel implements Runnable{
                 this.node[i][j].calculateH(targetNode);
             }
         }
-        this.startNode = this.node[0][0];
-        this.targetNode = this.node[10][10];
+        this.startNode = this.node[10][10];
+        this.targetNode = this.node[20][20];
+
 
         for (int i = 0; i < COLS; i++) {
             for (int j = 0; j < ROWS; j++) {
@@ -79,54 +75,60 @@ public class Main extends JPanel implements Runnable{
 
     private void createButton(JPanel panel) {
         panel.setLayout(null);
+
+        final Thread[] threadAStar = new Thread[1];
+        final Thread[] threadDijkstra = new Thread[1];
+
+
         JButton aStar = new JButton("A* algorithm");
+        JButton ds = new JButton("Dijkstra algorithm");
+
+        aStar.setBackground(new Color(255, 255, 255));
+        ds.setBackground(new Color(255, 255, 255));
 
         aStar.setBounds(HEIGHT + TILE_SIZE,100,200,50);
         aStar.setFocusPainted(false);
-        aStar.setBackground(new Color(59, 89, 182));
         aStar.setFont(new Font("Serif", Font.BOLD, 15));
 
         aStar.addActionListener(e -> {
+            ds.setBackground(new Color(255, 255, 255));
             aStar.setBackground(new Color(59, 89, 182));
-            aStar.setText(aStar.getText() + state);
-            state = AStarAlgorithm;
+            resetState();
+            if(threadDijkstra[0] != null) threadDijkstra[0].stop();
+            if(threadAStar[0] != null) threadAStar[0].stop();
+            this.removeMouseListener(mouseHandler);
+            AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
+            threadAStar[0] = new Thread(aStarAlgorithm);
+            threadAStar[0].start();
+            repaint();
         });
 
-        JButton dijkstra = new JButton("Dijkstra algorithm");
 
-        dijkstra.setBounds(HEIGHT + TILE_SIZE,200,200,50);
+        ds.setBounds(HEIGHT + TILE_SIZE,200,200,50);
+        ds.setFocusPainted(false);
+        ds.setFont(new Font("Serif", Font.BOLD, 15));
 
-        dijkstra.setFocusPainted(false);
-        dijkstra.setBackground(new Color(255, 255, 255));
-        dijkstra.setFont(new Font("Serif", Font.BOLD, 15));
-
-        dijkstra.addActionListener(e -> {
-            dijkstra.setBackground(new Color(59, 89, 182));
-            dijkstra.setText(dijkstra.getText() + state);
-            state++;
-//            state = Dijkstra;
+        ds.addActionListener(e -> {
+            aStar.setBackground(new Color(255, 255, 255));
+            ds.setBackground(new Color(59, 89, 182));
+            resetState();
+            if(threadDijkstra[0] != null) threadDijkstra[0].stop();
+            if(threadAStar[0] != null) threadAStar[0].stop();
+            this.removeMouseListener(mouseHandler);
+            Dijkstra dijkstra = new Dijkstra(this);
+            threadDijkstra[0] = new Thread(dijkstra);
+            threadDijkstra[0].start();
+            repaint();
         });
+
         panel.add(aStar);
-        panel.add(dijkstra);
-    }
-
-
-    public void start(){
-        resetState();
-
-        AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(this);
-        Thread thread = new Thread(aStarAlgorithm);
-        thread.start();
-//
-//        Dijkstra dijkstra = new Dijkstra(this);
-//        Thread thread = new Thread(dijkstra);
-//        thread.start();
-        repaint();
+        panel.add(ds);
     }
 
 
     public void startMouseHandler(Main main) {
-        main.addMouseListener(new MouseHandler(main));
+        mouseHandler = new MouseHandler(main);
+        main.addMouseListener(mouseHandler);
     }
 
 
@@ -242,8 +244,6 @@ public class Main extends JPanel implements Runnable{
         frame.getContentPane().setLayout(null);
 
         createButton(main);
-
-        main.start();
 
         startMouseHandler(main);
 

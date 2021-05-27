@@ -36,13 +36,8 @@ public class Dijkstra implements Runnable {
                         if (!open.contains(node) && !close.contains(node)) {
                             node.parent = startNode;
                             node.setG(weight);
-                            try {
-                                Thread.sleep(100);
-                                this.main.repaint();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                             open.add(node);
+                            setState();
                             node.setState(Node.State.OPEN);
                         } else {
                             if (node.getG() > weight) {
@@ -51,12 +46,7 @@ public class Dijkstra implements Runnable {
                                 if (close.contains(node)) {
                                     close.remove(node);
                                     open.add(node);
-                                    try {
-                                        Thread.sleep(100);
-                                        this.main.repaint();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                                    setState();
                                     node.setState(Node.State.OPEN);
                                 }
                             }
@@ -69,8 +59,19 @@ public class Dijkstra implements Runnable {
         }
     }
 
+
+    private void setState() {
+        try {
+            Thread.sleep(this.main.speed);
+            this.main.repaint();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
         calculate(this.main.startNode);
+        this.main.addMouseListener(this.main.mouseHandler);
     }
 }

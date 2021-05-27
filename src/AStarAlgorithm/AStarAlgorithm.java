@@ -35,12 +35,7 @@ public class AStarAlgorithm implements Runnable {
                         node.parent = currentNode;
                         node.calculateG(currentNode);
                         open.add(node);
-                        try {
-                            Thread.sleep(100);
-                            this.main.repaint();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        setState();
                         node.setState(Node.State.OPEN);
                     }
                     else {
@@ -50,12 +45,7 @@ public class AStarAlgorithm implements Runnable {
                             if(close.contains(node)){
                                 close.remove(node);
                                 open.add(node);
-                                try {
-                                    Thread.sleep(100);
-                                    this.main.repaint();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                setState();
                                 node.setState(Node.State.OPEN);
                             }
                         }
@@ -68,8 +58,18 @@ public class AStarAlgorithm implements Runnable {
         }
     }
 
+    private void setState(){
+        try {
+            Thread.sleep(this.main.speed);
+            this.main.repaint();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
         aStar(this.main.startNode);
+        this.main.addMouseListener(this.main.mouseHandler);
     }
 }
