@@ -3,6 +3,7 @@ package AStarAlgorithm;
 import View.Main;
 import View.Node;
 
+import javax.swing.*;
 import java.util.*;
 
 public class AStarAlgorithm implements Runnable {
@@ -11,6 +12,8 @@ public class AStarAlgorithm implements Runnable {
     public PriorityQueue<Node> open = new PriorityQueue<>();
 
     public PriorityQueue<Node> close = new PriorityQueue<>();
+
+    double startTime = System.currentTimeMillis();
 
     public AStarAlgorithm(Main main) {
         this.main = main;
@@ -56,11 +59,13 @@ public class AStarAlgorithm implements Runnable {
             close.add(currentNode);
             open.remove(currentNode);
         }
+        JOptionPane.showMessageDialog(this.main,"No path to the destination!","",JOptionPane.ERROR_MESSAGE);
     }
 
     private void setState(){
         try {
             Thread.sleep(this.main.speed);
+            this.main.time = (System.currentTimeMillis() - startTime)/1000;
             this.main.repaint();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -69,7 +74,9 @@ public class AStarAlgorithm implements Runnable {
 
     @Override
     public void run() {
+        this.main.time = 0;
         aStar(this.main.startNode);
+        this.main.time = (System.currentTimeMillis() - startTime)/1000;
         this.main.addMouseListener(this.main.mouseHandler);
     }
 }

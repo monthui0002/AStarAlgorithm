@@ -3,19 +3,23 @@ package AStarAlgorithm;
 import View.Main;
 import View.Node;
 
+import javax.swing.*;
 import java.util.PriorityQueue;
 
 public class Dijkstra implements Runnable {
     Main main;
 
     PriorityQueue<Node> open = new PriorityQueue<>();
+
     PriorityQueue<Node> close = new PriorityQueue<>();
+
+    double startTime = System.currentTimeMillis();
 
     public Dijkstra(Main main) {
         this.main = main;
     }
 
-    public void calculate(Node startNode) {
+    public void dijkstra(Node startNode) {
         for (int i = 0; i < Main.COLS; i++) {
             for (int j = 0; j < Main.ROWS; j++) {
                 this.main.node[i][j].setH(0);
@@ -57,12 +61,14 @@ public class Dijkstra implements Runnable {
             close.add(startNode);
             open.remove(startNode);
         }
+        JOptionPane.showMessageDialog(this.main,"No path to the destination!","",JOptionPane.ERROR_MESSAGE);
     }
 
 
     private void setState() {
         try {
             Thread.sleep(this.main.speed);
+            this.main.time = (System.currentTimeMillis() - startTime)/1000;
             this.main.repaint();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -71,7 +77,9 @@ public class Dijkstra implements Runnable {
 
     @Override
     public void run() {
-        calculate(this.main.startNode);
+        this.main.time = 0;
+        dijkstra(this.main.startNode);
+        this.main.time = (System.currentTimeMillis() - startTime)/1000;
         this.main.addMouseListener(this.main.mouseHandler);
     }
 }
