@@ -55,7 +55,7 @@ public class Main extends JPanel implements Runnable{
     public void run() {
         main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        frame = new JFrame("A Star Algorithm");
+        frame = new JFrame("Tìm đường đi ngắn nhất trong ma trận");
         frame.getContentPane().add(main);
         frame.setResizable(false);
         frame.pack();
